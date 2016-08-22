@@ -106,10 +106,12 @@
     var hero = document.querySelectorAll('.hero')[0];
     var nextPos = getNextPos(getVector(getCoords(node)));
     var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
+    var endTurnEvent = new CustomEvent('hero:endTurn');
 
     pos = nextPos;
     hero.parentNode.removeChild(hero);
     nextPosNode.appendChild(hero);
+    document.dispatchEvent(endTurnEvent);
   }
 
   function incrementTurns() {
@@ -124,6 +126,10 @@
       else if (e.target.classList.contains('character')) {
         moveCharTowards(e.target.parentNode);
       }
+    });
+    document.addEventListener('hero:endTurn', function (e) {
+      incrementTurns();
+      document.getElementsByClassName('info-turn-count')[0].innerHTML = turns;
     });
   }
 
