@@ -10,11 +10,11 @@
     COL: 'col',
     ROW: 'row'
   };
-
   var pos = {
     row: 1,
     col: 1
   };
+  var turns = 0;
 
   function matchCoordFor(colOrRow) {
     var regex = colOrRow === constants.COL ? /map-col-(\d+)/ : /map-row-(\d+)/;
@@ -110,6 +110,10 @@
     pos = nextPos;
     hero.parentNode.removeChild(hero);
     nextPosNode.appendChild(hero);
+  }
+
+  function incrementTurns() {
+    turns += 1;
   }
 
   function bindEvents() {
