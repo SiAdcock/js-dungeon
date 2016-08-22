@@ -1,0 +1,45 @@
+h1 {
+    color: blueviolet;
+}
+
+ul {
+    list-style: none;
+}
+
+.map {
+
+}
+
+.map-col {
+    display: inline-block;
+}
+
+.terrain {
+    width: 20px;
+    height: 20px;
+    border: 1px solid pink;
+}
+
+.terrain:active {
+    background-color: deepskyblue;
+}
+
+.terrain-grass {
+    background-color: yellowgreen;
+}
+
+.terrain-start {
+    background-color: yellow;
+}
+
+.terrain-end {
+    background-color: black;
+}
+
+.enemy {
+    background-color: darkred;
+    border-radius: 10px;
+    width: 10px;
+    height: 10px;
+    margin: 5px auto;
+}
