@@ -1,8 +1,22 @@
 (function () {
   'use strict';
 
+  var constants = {
+    UP: 'up',
+    DOWN: 'down',
+    LEFT: 'left',
+    RIGHT: 'right',
+    COL: 'col',
+    ROW: 'row'
+  };
+
+  var pos = {
+    row: 1,
+    col: 1
+  };
+
   function matchCoordFor(colOrRow) {
-    var regex = colOrRow === 'col' ? /map-col-(\d+)/ : /map-row-(\d+)/;
+    var regex = colOrRow === constants.COL ? /map-col-(\d+)/ : /map-row-(\d+)/;
 
     return function (prev, curr) {
       if (prev) {
@@ -20,8 +34,62 @@
   function getCoords(node) {
     var colReduce = Array.prototype.reduce.bind(node.classList);
     var rowReduce = Array.prototype.reduce.bind(node.parentNode.parentNode.classList);
-    var col = colReduce(matchCoordFor('col'), null);
-    var row = rowReduce(matchCoordFor('row'), null);
+    var col = parseInt(colReduce(matchCoordFor(constants.COL), null), 10);
+    var row = parseInt(rowReduce(matchCoordFor(constants.ROW), null), 10);
+
+    return {
+      row: row,
+      col: col
+    };
+  }
+
+  function getVector(coords) {
+    return {
+      x: coords.col - pos.col,
+      y: coords.row - pos.row
+    };
+  }
+
+  function getDirection(vector) {
+    if (Math.abs(vector.y) > Math.abs(vector.x)) {
+      if (vector.y < 0) {
+        return constants.UP;
+      }
+      else {
+        return constants.DOWN;
+      }
+    }
+    else {
+      if (vector.x < 0) {
+        return constants.LEFT;
+      }
+      else {
+        return constants.RIGHT;
+      }
+    }
+  }
+
+  function getNextPos(vector) {
+    var row = pos.row;
+    var col = pos.col;
+    var direction = getDirection(vector);
+
+    switch (direction) {
+      case constants.UP:
+        row = pos.row - 1;
+        break;
+      case constants.DOWN:
+        row = pos.row + 1;
+        break;
+      case constants.LEFT:
+        col = pos.col - 1;
+        break;
+      case constants.RIGHT:
+        col = pos.col + 1;
+        break;
+      default:
+        break;
+    }
 
     return {
       row: row,
@@ -32,7 +100,13 @@
   function bindEvents() {
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('map-col')) {
-        console.log(getCoords(e.target));
+        var hero = document.querySelectorAll('.hero')[0];
+        var nextPos = getNextPos(getVector(getCoords(e.target)));
+        var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
+
+        pos = nextPos;
+        hero.parentNode.removeChild(hero);
+        nextPosNode.appendChild(hero);
       }
     });
   }
