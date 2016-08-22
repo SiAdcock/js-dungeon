@@ -102,28 +102,17 @@
     };
   }
 
-  function moveCharTowards(node) {
-    var hero = document.querySelectorAll('.hero')[0];
-    var nodePos = getCoords(node);
-    var heroVector = getVector(heroPos, nodePos);
-    var nextPos = getNextPos(heroPos, heroVector);
+  function moveCharTowards(charNode, toNode) {
+    var nodePos = getCoords(toNode);
+    var charPos = getCoords(charNode.parentNode);
+    var heroVector = getVector(charPos, nodePos);
+    var nextPos = getNextPos(charPos, heroVector);
     var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
 
-    hero.parentNode.removeChild(hero);
-    nextPosNode.appendChild(hero);
-    heroPos = nextPos;
-  }
+    charNode.parentNode.removeChild(charNode);
+    nextPosNode.appendChild(charNode);
 
-  function moveEnemyTowards(node) {
-    var enemy = document.querySelectorAll('.enemy')[0];
-    var nodePos = getCoords(node);
-    var enemyPos = getCoords(enemy.parentNode);
-    var enemyVector = getVector(enemyPos, nodePos);
-    var nextPos = getNextPos(enemyPos, enemyVector);
-    var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
-
-    enemy.parentNode.removeChild(enemy);
-    nextPosNode.appendChild(enemy);
+    return nextPos;
   }
 
   function incrementTurns() {
@@ -133,14 +122,17 @@
 
   function bindEvents() {
     document.addEventListener('click', function (e) {
+      var hero = document.querySelectorAll('.hero')[0];
+      var enemy = document.querySelectorAll('.enemy')[0];
+
       if (e.target.classList.contains('map-col')) {
-        moveCharTowards(e.target);
-        moveEnemyTowards(e.target);
+        heroPos = moveCharTowards(hero, e.target);
+        moveCharTowards(enemy, e.target);
         document.dispatchEvent(new CustomEvent('hero:endTurn'));
       }
       else if (e.target.classList.contains('character')) {
-        moveCharTowards(e.target.parentNode);
-        moveEnemyTowards(e.target.parentNode);
+        heroPos = moveCharTowards(hero, e.target.parentNode);
+        moveCharTowards(enemy, e.target.parentNode);
         document.dispatchEvent(new CustomEvent('hero:endTurn'));
       }
     });
