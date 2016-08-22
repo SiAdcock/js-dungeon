@@ -10,7 +10,7 @@
     COL: 'col',
     ROW: 'row'
   };
-  var pos = {
+  var heroPos = {
     row: 1,
     col: 1
   };
@@ -44,10 +44,10 @@
     };
   }
 
-  function getVector(coords) {
+  function getVector(oldPos, newPos) {
     return {
-      x: coords.col - pos.col,
-      y: coords.row - pos.row
+      x: newPos.col - oldPos.col,
+      y: newPos.row - oldPos.row
     };
   }
 
@@ -73,23 +73,23 @@
     }
   }
 
-  function getNextPos(vector) {
-    var row = pos.row;
-    var col = pos.col;
+  function getNextPos(oldPos, vector) {
+    var row = oldPos.row;
+    var col = oldPos.col;
     var direction = getDirection(vector);
 
     switch (direction) {
       case constants.UP:
-        row = pos.row - 1;
+        row = oldPos.row - 1;
         break;
       case constants.DOWN:
-        row = pos.row + 1;
+        row = oldPos.row + 1;
         break;
       case constants.LEFT:
-        col = pos.col - 1;
+        col = oldPos.col - 1;
         break;
       case constants.RIGHT:
-        col = pos.col + 1;
+        col = oldPos.col + 1;
         break;
       case constants.REST:
       default:
@@ -104,27 +104,44 @@
 
   function moveCharTowards(node) {
     var hero = document.querySelectorAll('.hero')[0];
-    var nextPos = getNextPos(getVector(getCoords(node)));
+    var nodePos = getCoords(node);
+    var heroVector = getVector(heroPos, nodePos);
+    var nextPos = getNextPos(heroPos, heroVector);
     var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
-    var endTurnEvent = new CustomEvent('hero:endTurn');
 
-    pos = nextPos;
     hero.parentNode.removeChild(hero);
     nextPosNode.appendChild(hero);
-    document.dispatchEvent(endTurnEvent);
+    heroPos = nextPos;
+  }
+
+  function moveEnemyTowards(node) {
+    var enemy = document.querySelectorAll('.enemy')[0];
+    var nodePos = getCoords(node);
+    var enemyPos = getCoords(enemy.parentNode);
+    var enemyVector = getVector(enemyPos, nodePos);
+    var nextPos = getNextPos(enemyPos, enemyVector);
+    var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
+
+    enemy.parentNode.removeChild(enemy);
+    nextPosNode.appendChild(enemy);
   }
 
   function incrementTurns() {
     turns += 1;
   }
 
+
   function bindEvents() {
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('map-col')) {
         moveCharTowards(e.target);
+        moveEnemyTowards(e.target);
+        document.dispatchEvent(new CustomEvent('hero:endTurn'));
       }
       else if (e.target.classList.contains('character')) {
         moveCharTowards(e.target.parentNode);
+        moveEnemyTowards(e.target.parentNode);
+        document.dispatchEvent(new CustomEvent('hero:endTurn'));
       }
     });
     document.addEventListener('hero:endTurn', function (e) {
