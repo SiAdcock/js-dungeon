@@ -6,6 +6,7 @@
     DOWN: 'down',
     LEFT: 'left',
     RIGHT: 'right',
+    REST: 'rest',
     COL: 'col',
     ROW: 'row'
   };
@@ -51,6 +52,9 @@
   }
 
   function getDirection(vector) {
+    if (vector.x === 0 && vector.y === 0) {
+      return constants.REST;
+    }
     if (Math.abs(vector.y) > Math.abs(vector.x)) {
       if (vector.y < 0) {
         return constants.UP;
@@ -87,6 +91,7 @@
       case constants.RIGHT:
         col = pos.col + 1;
         break;
+      case constants.REST:
       default:
         break;
     }
@@ -97,16 +102,23 @@
     };
   }
 
+  function moveCharTowards(node) {
+    var hero = document.querySelectorAll('.hero')[0];
+    var nextPos = getNextPos(getVector(getCoords(node)));
+    var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
+
+    pos = nextPos;
+    hero.parentNode.removeChild(hero);
+    nextPosNode.appendChild(hero);
+  }
+
   function bindEvents() {
     document.addEventListener('click', function (e) {
       if (e.target.classList.contains('map-col')) {
-        var hero = document.querySelectorAll('.hero')[0];
-        var nextPos = getNextPos(getVector(getCoords(e.target)));
-        var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
-
-        pos = nextPos;
-        hero.parentNode.removeChild(hero);
-        nextPosNode.appendChild(hero);
+        moveCharTowards(e.target);
+      }
+      else if (e.target.classList.contains('character')) {
+        moveCharTowards(e.target.parentNode);
       }
     });
   }
