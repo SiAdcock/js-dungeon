@@ -6,6 +6,10 @@ window.dungeon.map = (function (constants) {
   var enemies = [];
   var lastHeroVector;
 
+  function setLastHeroVector(direction) {
+    lastHeroVector = direction;
+  }
+
   function matchCoordFor(colOrRow) {
     var regex = colOrRow === constants.COL ? /map-col-(\d+)/ : /map-row-(\d+)/;
 
@@ -108,6 +112,7 @@ window.dungeon.map = (function (constants) {
     var heroVector = getVector(heroPos, nodePos);
     var nextPos = getNextPos(heroPos, heroVector);
 
+    setLastHeroVector(heroVector);
     moveCharInDom(heroNode, nextPos);
   }
 
@@ -117,16 +122,28 @@ window.dungeon.map = (function (constants) {
 
     enemies.forEach(function (enemy) {
       var vector = getVector(enemy.pos, heroCoords);
+      var potentialNextPos = getNextPos(enemy.pos, vector);
 
       // if enemy and hero are at the same position
       if (vector.x === 0 && vector.y === 0) {
         return;
       }
-      // hero is within aggro range
-      else if (Math.abs(vector.x) <= enemy.aggroRange && Math.abs(vector.y) <= enemy.aggroRange) {
-        enemy.pos = getNextPos(enemy.pos, vector);
-        moveCharInDom(enemy.node, enemy.pos);
+      // if hero is adjacent to enemy
+      else if (Math.abs(vector.x) === 1 && Math.abs(vector.y) === 1) {
+        // if enemy can attack hero
+        if (potentialNextPos.row === heroCoords.row && potentialNextPos.col === heroCoords.col) {
+          enemy.pos = potentialNextPos;
+        }
+        // if enemy can't attack (i.e. can't move diagonally), mirror the hero's vector
+        else {
+          enemy.pos = getNextPos(enemy.pos, lastHeroVector);
+        }
       }
+      // if hero is within aggro range, move towards hero
+      else if (Math.abs(vector.x) <= enemy.aggroRange && Math.abs(vector.y) <= enemy.aggroRange) {
+        enemy.pos = potentialNextPos;
+      }
+      moveCharInDom(enemy.node, enemy.pos);
     });
   }
 
