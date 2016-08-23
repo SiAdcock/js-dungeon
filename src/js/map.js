@@ -4,6 +4,7 @@ window.dungeon.map = (function (constants) {
   'use strict';
 
   var enemies = [];
+  var lastHeroVector;
 
   function matchCoordFor(colOrRow) {
     var regex = colOrRow === constants.COL ? /map-col-(\d+)/ : /map-row-(\d+)/;
@@ -95,9 +96,24 @@ window.dungeon.map = (function (constants) {
     return document.querySelectorAll('.map-row-' + pos.row + ' .map-col-' + pos.col)[0];
   }
 
+  function moveCharInDom(charNode, nextPos) {
+    charNode.parentNode.removeChild(charNode);
+    getPosNode(nextPos).appendChild(charNode);
+  }
+
+  function moveHeroTowards(toNode) {
+    var heroNode = document.querySelectorAll('.hero')[0];
+    var nodePos = getCoords(toNode);
+    var heroPos = getCoords(heroNode.parentNode);
+    var heroVector = getVector(heroPos, nodePos);
+    var nextPos = getNextPos(heroPos, heroVector);
+
+    moveCharInDom(heroNode, nextPos);
+  }
+
   function moveEnemies() {
-    var hero = document.querySelectorAll('.hero')[0];
-    var heroCoords = getCoords(hero.parentNode);
+    var heroNode = document.querySelectorAll('.hero')[0];
+    var heroCoords = getCoords(heroNode.parentNode);
 
     enemies.forEach(function (enemy) {
       var vector = getVector(enemy.pos, heroCoords);
@@ -109,21 +125,9 @@ window.dungeon.map = (function (constants) {
       // hero is within aggro range
       else if (Math.abs(vector.x) <= enemy.aggroRange && Math.abs(vector.y) <= enemy.aggroRange) {
         enemy.pos = getNextPos(enemy.pos, vector);
-        enemy.node.parentNode.removeChild(enemy.node);
-        getPosNode(enemy.pos).appendChild(enemy.node);
+        moveCharInDom(enemy.node, enemy.pos);
       }
     });
-  }
-
-  function moveCharTowards(charNode, toNode) {
-    var nodePos = getCoords(toNode);
-    var charPos = getCoords(charNode.parentNode);
-    var heroVector = getVector(charPos, nodePos);
-    var nextPos = getNextPos(charPos, heroVector);
-    var nextPosNode = getPosNode(nextPos);
-
-    charNode.parentNode.removeChild(charNode);
-    nextPosNode.appendChild(charNode);
   }
 
   function createEnemy(options) {
@@ -152,7 +156,7 @@ window.dungeon.map = (function (constants) {
   }
 
   return {
-    moveCharTowards: moveCharTowards,
+    moveHeroTowards: moveHeroTowards,
     moveEnemies: moveEnemies,
     init: init
   };

@@ -9,14 +9,12 @@
 
   function bindEvents() {
     document.addEventListener('click', function (e) {
-      var hero = document.querySelectorAll('.hero')[0];
-
       if (e.target.classList.contains('map-col')) {
-        map.moveCharTowards(hero, e.target);
+        map.moveHeroTowards(e.target);
         document.dispatchEvent(new CustomEvent('hero:endTurn'));
       }
       else if (e.target.classList.contains('character')) {
-        map.moveCharTowards(hero, e.target.parentNode);
+        map.moveHeroTowards(e.target.parentNode);
         document.dispatchEvent(new CustomEvent('hero:endTurn'));
       }
     });
