@@ -3,6 +3,8 @@ window.dungeon = window.dungeon || {};
 window.dungeon.map = (function (constants) {
   'use strict';
 
+  var enemies = [];
+
   function matchCoordFor(colOrRow) {
     var regex = colOrRow === constants.COL ? /map-col-(\d+)/ : /map-row-(\d+)/;
 
@@ -89,18 +91,69 @@ window.dungeon.map = (function (constants) {
     };
   }
 
+  function getPosNode(pos) {
+    return document.querySelectorAll('.map-row-' + pos.row + ' .map-col-' + pos.col)[0];
+  }
+
+  function moveEnemies() {
+    var hero = document.querySelectorAll('.hero')[0];
+    var heroCoords = getCoords(hero.parentNode);
+
+    enemies.forEach(function (enemy) {
+      var vector = getVector(enemy.pos, heroCoords);
+
+      // if enemy and hero are at the same position
+      if (vector.x === 0 && vector.y === 0) {
+        return;
+      }
+      // hero is within aggro range
+      else if (Math.abs(vector.x) <= enemy.aggroRange && Math.abs(vector.y) <= enemy.aggroRange) {
+        enemy.pos = getNextPos(enemy.pos, vector);
+        enemy.node.parentNode.removeChild(enemy.node);
+        getPosNode(enemy.pos).appendChild(enemy.node);
+      }
+    });
+  }
+
   function moveCharTowards(charNode, toNode) {
     var nodePos = getCoords(toNode);
     var charPos = getCoords(charNode.parentNode);
     var heroVector = getVector(charPos, nodePos);
     var nextPos = getNextPos(charPos, heroVector);
-    var nextPosNode = document.querySelectorAll('.map-row-' + nextPos.row + ' .map-col-' + nextPos.col)[0];
+    var nextPosNode = getPosNode(nextPos);
 
     charNode.parentNode.removeChild(charNode);
     nextPosNode.appendChild(charNode);
   }
 
+  function createEnemy(options) {
+    var enemyPosNode = getPosNode(options.pos);
+    var enemyNode = document.createElement('div');
+
+    enemyNode.setAttribute('class', 'enemy character');
+    enemyPosNode.appendChild(enemyNode);
+
+    return {
+      pos: {
+        col: options.pos.col,
+        row: options.pos.row
+      },
+      aggroRange: options.aggroRange,
+      node: enemyNode
+    };
+  }
+
+  function init() {
+    var enemyOptions = {
+      pos: { col: 9, row: 4 },
+      aggroRange: 2
+    };
+    enemies.push(createEnemy(enemyOptions));
+  }
+
   return {
-    moveCharTowards: moveCharTowards
+    moveCharTowards: moveCharTowards,
+    moveEnemies: moveEnemies,
+    init: init
   };
 }(window.dungeon.constants));
