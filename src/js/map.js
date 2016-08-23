@@ -1,20 +1,7 @@
-(function () {
-  'use strict';
+window.dungeon = window.dungeon || {};
 
-  var constants = {
-    UP: 'up',
-    DOWN: 'down',
-    LEFT: 'left',
-    RIGHT: 'right',
-    REST: 'rest',
-    COL: 'col',
-    ROW: 'row'
-  };
-  var heroPos = {
-    row: 1,
-    col: 1
-  };
-  var turns = 0;
+window.dungeon.map = (function (constants) {
+  'use strict';
 
   function matchCoordFor(colOrRow) {
     var regex = colOrRow === constants.COL ? /map-col-(\d+)/ : /map-row-(\d+)/;
@@ -111,36 +98,9 @@
 
     charNode.parentNode.removeChild(charNode);
     nextPosNode.appendChild(charNode);
-
-    return nextPos;
   }
 
-  function incrementTurns() {
-    turns += 1;
-  }
-
-
-  function bindEvents() {
-    document.addEventListener('click', function (e) {
-      var hero = document.querySelectorAll('.hero')[0];
-      var enemy = document.querySelectorAll('.enemy')[0];
-
-      if (e.target.classList.contains('map-col')) {
-        heroPos = moveCharTowards(hero, e.target);
-        moveCharTowards(enemy, e.target);
-        document.dispatchEvent(new CustomEvent('hero:endTurn'));
-      }
-      else if (e.target.classList.contains('character')) {
-        heroPos = moveCharTowards(hero, e.target.parentNode);
-        moveCharTowards(enemy, e.target.parentNode);
-        document.dispatchEvent(new CustomEvent('hero:endTurn'));
-      }
-    });
-    document.addEventListener('hero:endTurn', function (e) {
-      incrementTurns();
-      document.getElementsByClassName('info-turn-count')[0].innerHTML = turns;
-    });
-  }
-
-  bindEvents();
-}());
+  return {
+    moveCharTowards: moveCharTowards
+  };
+}(window.dungeon.constants));
