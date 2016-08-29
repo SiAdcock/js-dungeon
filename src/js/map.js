@@ -1,10 +1,11 @@
 window.dungeon = window.dungeon || {};
 
-window.dungeon.map = (function (constants) {
+window.dungeon.map = (function (constants, createHero) {
   'use strict';
 
   var enemies = [];
   var lastHeroVector;
+  var hero;
 
   function setLastHeroVector(direction) {
     lastHeroVector = direction;
@@ -108,17 +109,17 @@ window.dungeon.map = (function (constants) {
   function moveHeroTowards(toNode) {
     var heroNode = document.querySelectorAll('.hero')[0];
     var nodePos = getCoords(toNode);
-    var heroPos = getCoords(heroNode.parentNode);
+    var heroPos = hero.getCoords();
     var heroVector = getVector(heroPos, nodePos);
     var nextPos = getNextPos(heroPos, heroVector);
 
+    hero.setCoords(nextPos);
     setLastHeroVector(heroVector);
     moveCharInDom(heroNode, nextPos);
   }
 
   function moveEnemies() {
-    var heroNode = document.querySelectorAll('.hero')[0];
-    var heroCoords = getCoords(heroNode.parentNode);
+    var heroCoords = hero.getCoords();
 
     enemies.forEach(function (enemy) {
       var vector = getVector(enemy.pos, heroCoords);
@@ -147,6 +148,16 @@ window.dungeon.map = (function (constants) {
     });
   }
 
+  function initHero(options) {
+    var heroPosNode = getPosNode(options.pos);
+    var heroNode = document.createElement('div');
+
+    heroNode.setAttribute('class', 'hero character');
+    heroPosNode.appendChild(heroNode);
+
+    return createHero(options);
+  }
+
   function createEnemy(options) {
     var enemyPosNode = getPosNode(options.pos);
     var enemyNode = document.createElement('div');
@@ -170,6 +181,7 @@ window.dungeon.map = (function (constants) {
       aggroRange: 2
     };
     enemies.push(createEnemy(enemyOptions));
+    hero = initHero({ pos: { row: 1, col: 1 } });
   }
 
   return {
@@ -177,4 +189,4 @@ window.dungeon.map = (function (constants) {
     moveEnemies: moveEnemies,
     init: init
   };
-}(window.dungeon.constants));
+}(window.dungeon.constants, window.dungeon.createHero));
