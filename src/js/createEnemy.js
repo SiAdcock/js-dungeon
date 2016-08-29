@@ -9,7 +9,6 @@ window.dungeon.createEnemy = (function (pos) {
       row: options.pos.row
     };
     var aggroRange = options.aggroRange;
-    var node = options.node;
 
     function getCoords() {
       return {
@@ -25,10 +24,6 @@ window.dungeon.createEnemy = (function (pos) {
 
     function getAggroRange() {
       return aggroRange;
-    }
-
-    function getNode() {
-      return node;
     }
 
     function move(hero) {
@@ -62,7 +57,6 @@ window.dungeon.createEnemy = (function (pos) {
       getCoords: getCoords,
       setCoords: setCoords,
       getAggroRange: getAggroRange,
-      getNode: getNode,
       move: move
     };
   };

@@ -57,8 +57,10 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
 
   function moveEnemies() {
     enemies.forEach(function (enemy) {
+      var enemyNode = getPosNode(enemy.getCoords()).childNodes[0];
+
       enemy.move(hero);
-      moveCharInDom(enemy.getNode(), enemy.getCoords());
+      moveCharInDom(enemyNode, enemy.getCoords());
     });
   }
 
@@ -79,7 +81,7 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
     enemyNode.setAttribute('class', 'enemy character');
     enemyPosNode.appendChild(enemyNode);
 
-    return createEnemy({ pos: options.pos, aggroRange: options.aggroRange, node: enemyNode });
+    return createEnemy({ pos: options.pos, aggroRange: options.aggroRange });
   }
 
   function init() {
