@@ -32,6 +32,10 @@ window.dungeon.createEnemy = (function (pos) {
       var vector = pos.getVector(enemyCoords, heroCoords);
       var potentialNextPos = pos.getNextPos(enemyCoords, vector);
 
+      /**
+       * TODO: this logic needs re-working. If hero moves toward enemy and lands
+       * diagonally adjacent, enemy moves away!
+       */
       // if enemy and hero are at the same position
       if (vector.x === 0 && vector.y === 0) {
         return;
