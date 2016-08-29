@@ -45,14 +45,9 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
 
   function moveHeroTowards(toNode) {
     var heroNode = document.querySelectorAll('.hero')[0];
-    var nodePos = getCoords(toNode);
-    var heroPos = hero.getCoords();
-    var heroVector = pos.getVector(heroPos, nodePos);
-    var nextPos = pos.getNextPos(heroPos, heroVector);
 
-    hero.setCoords(nextPos);
-    hero.setLastVector(heroVector);
-    moveCharInDom(heroNode, nextPos);
+    hero.move(getCoords(toNode));
+    moveCharInDom(heroNode, hero.getCoords());
   }
 
   function moveEnemies() {
