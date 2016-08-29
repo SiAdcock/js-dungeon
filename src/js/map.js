@@ -130,7 +130,7 @@ window.dungeon.map = (function (constants, createHero) {
         return;
       }
       // if hero is adjacent to enemy
-      else if (Math.abs(vector.x) === 1 && Math.abs(vector.y) === 1) {
+      else if (Math.abs(vector.x) === 1 || Math.abs(vector.y) === 1) {
         // if enemy can attack hero
         if (potentialNextPos.row === heroCoords.row && potentialNextPos.col === heroCoords.col) {
           enemy.pos = potentialNextPos;
