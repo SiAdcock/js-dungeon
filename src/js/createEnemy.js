@@ -1,12 +1,14 @@
 window.dungeon = window.dungeon || {};
 
-window.dungeon.createHero = function createHero(options) {
+window.dungeon.createEnemy = function createEnemy(options) {
   'use strict';
 
   var pos = {
     col: options.pos.col,
     row: options.pos.row
   };
+  var aggroRange = options.aggroRange;
+  var node = options.node;
 
   function getCoords() {
     return {
@@ -22,6 +24,12 @@ window.dungeon.createHero = function createHero(options) {
 
   return {
     getCoords: getCoords,
-    setCoords: setCoords
+    setCoords: setCoords,
+    getAggroRange: function () {
+      return aggroRange;
+    },
+    getNode: function () {
+      return node;
+    }
   };
 };

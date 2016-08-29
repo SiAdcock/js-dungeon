@@ -1,6 +1,6 @@
 window.dungeon = window.dungeon || {};
 
-window.dungeon.map = (function (constants, createHero) {
+window.dungeon.map = (function (constants, createHero, createEnemy) {
   'use strict';
 
   var enemies = [];
@@ -122,29 +122,30 @@ window.dungeon.map = (function (constants, createHero) {
     var heroCoords = hero.getCoords();
 
     enemies.forEach(function (enemy) {
-      var vector = getVector(enemy.pos, heroCoords);
-      var potentialNextPos = getNextPos(enemy.pos, vector);
+      var enemyCoords = enemy.getCoords();
+      var vector = getVector(enemyCoords, heroCoords);
+      var potentialNextPos = getNextPos(enemyCoords, vector);
 
       // if enemy and hero are at the same position
       if (vector.x === 0 && vector.y === 0) {
         return;
       }
       // if hero is adjacent to enemy
-      else if (Math.abs(vector.x) === 1 || Math.abs(vector.y) === 1) {
+      else if (Math.abs(vector.x) <= 1 && Math.abs(vector.y) <= 1) {
         // if enemy can attack hero
         if (potentialNextPos.row === heroCoords.row && potentialNextPos.col === heroCoords.col) {
-          enemy.pos = potentialNextPos;
+          enemy.setCoords(potentialNextPos);
         }
         // if enemy can't attack (i.e. can't move diagonally), mirror the hero's vector
         else {
-          enemy.pos = getNextPos(enemy.pos, lastHeroVector);
+          enemy.setCoords(getNextPos(enemy.getCoords(), lastHeroVector));
         }
       }
       // if hero is within aggro range, move towards hero
-      else if (Math.abs(vector.x) <= enemy.aggroRange && Math.abs(vector.y) <= enemy.aggroRange) {
-        enemy.pos = potentialNextPos;
+      else if (Math.abs(vector.x) <= enemy.getAggroRange() && Math.abs(vector.y) <= enemy.getAggroRange()) {
+        enemy.setCoords(potentialNextPos);
       }
-      moveCharInDom(enemy.node, enemy.pos);
+      moveCharInDom(enemy.getNode(), enemy.getCoords());
     });
   }
 
@@ -158,21 +159,14 @@ window.dungeon.map = (function (constants, createHero) {
     return createHero(options);
   }
 
-  function createEnemy(options) {
+  function initEnemy(options) {
     var enemyPosNode = getPosNode(options.pos);
     var enemyNode = document.createElement('div');
 
     enemyNode.setAttribute('class', 'enemy character');
     enemyPosNode.appendChild(enemyNode);
 
-    return {
-      pos: {
-        col: options.pos.col,
-        row: options.pos.row
-      },
-      aggroRange: options.aggroRange,
-      node: enemyNode
-    };
+    return createEnemy({ pos: options.pos, aggroRange: options.aggroRange, node: enemyNode });
   }
 
   function init() {
@@ -180,7 +174,7 @@ window.dungeon.map = (function (constants, createHero) {
       pos: { col: 9, row: 4 },
       aggroRange: 2
     };
-    enemies.push(createEnemy(enemyOptions));
+    enemies.push(initEnemy(enemyOptions));
     hero = initHero({ pos: { row: 1, col: 1 } });
   }
 
@@ -189,4 +183,4 @@ window.dungeon.map = (function (constants, createHero) {
     moveEnemies: moveEnemies,
     init: init
   };
-}(window.dungeon.constants, window.dungeon.createHero));
+}(window.dungeon.constants, window.dungeon.createHero, window.dungeon.createEnemy));
