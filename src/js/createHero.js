@@ -7,6 +7,7 @@ window.dungeon.createHero = function createHero(options) {
     col: options.pos.col,
     row: options.pos.row
   };
+  var lastVector;
 
   function getCoords() {
     return {
@@ -20,8 +21,18 @@ window.dungeon.createHero = function createHero(options) {
     pos.row = newPos.row;
   }
 
+  function getLastVector() {
+    return lastVector;
+  }
+
+  function setLastVector(vector) {
+    lastVector = vector;
+  }
+
   return {
     getCoords: getCoords,
-    setCoords: setCoords
+    setCoords: setCoords,
+    setLastVector: setLastVector,
+    getLastVector: getLastVector
   };
 };
