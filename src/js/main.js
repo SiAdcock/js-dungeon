@@ -18,10 +18,10 @@
         document.dispatchEvent(new CustomEvent('hero:endTurn'));
       }
     });
-    document.addEventListener('hero:endTurn', function (e) {
+    document.addEventListener('hero:endTurn', function () {
       map.moveEnemies();
       incrementTurns();
-      document.getElementsByClassName('info-turn-count')[0].innerHTML = turns;
+      document.getElementsByClassName('game-info-turn-count')[0].innerHTML = turns;
     });
   }
 

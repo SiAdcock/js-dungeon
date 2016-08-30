@@ -40,6 +40,7 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
 
   function moveCharInDom(charNode, nextPos) {
     charNode.parentNode.removeChild(charNode);
+    //TODO: ensure nextPos node exists
     getPosNode(nextPos).appendChild(charNode);
   }
 
@@ -52,7 +53,7 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
 
   function moveEnemies() {
     enemies.forEach(function (enemy) {
-      var enemyNode = getPosNode(enemy.getCoords()).childNodes[0];
+      var enemyNode = getPosNode(enemy.getCoords()).childNodes[0]; //TODO: can't always rely on this
 
       enemy.move(hero);
       moveCharInDom(enemyNode, enemy.getCoords());
@@ -65,6 +66,7 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
 
     heroNode.setAttribute('class', 'hero character');
     heroPosNode.appendChild(heroNode);
+    document.getElementsByClassName('hero-info-health')[0].innerHTML = options.health;
 
     return createHero(options);
   }
@@ -85,7 +87,10 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
       aggroRange: 2
     };
     enemies.push(initEnemy(enemyOptions));
-    hero = initHero({ pos: { row: 1, col: 1 } });
+    hero = initHero({
+      pos: { row: 1, col: 1 },
+      health: 10
+    });
   }
 
   return {
