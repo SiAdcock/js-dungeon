@@ -8,6 +8,7 @@ window.dungeon.createHero = (function (pos) {
       col: options.pos.col,
       row: options.pos.row
     };
+    var health = options.health;
     var lastVector;
 
     function getCoords() {
@@ -30,6 +31,10 @@ window.dungeon.createHero = (function (pos) {
       lastVector = vector;
     }
 
+    function getHealth() {
+      return health;
+    }
+
     function move(toCoords) {
       var heroVector = pos.getVector(getCoords(), toCoords);
       var nextPos = pos.getNextPos(getCoords(), heroVector);
@@ -43,6 +48,7 @@ window.dungeon.createHero = (function (pos) {
       setCoords: setCoords,
       setLastVector: setLastVector,
       getLastVector: getLastVector,
+      getHealth: getHealth,
       move: move
     };
   };

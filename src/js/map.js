@@ -60,25 +60,21 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
     });
   }
 
-  function initHero(options) {
-    var heroPosNode = getPosNode(options.pos);
-    var heroNode = document.createElement('div');
+  function renderCharacter(position, className) {
+    var posNode = getPosNode(position);
+    var charNode = document.createElement('div');
 
-    heroNode.setAttribute('class', 'hero character');
-    heroPosNode.appendChild(heroNode);
-    document.getElementsByClassName('hero-info-health')[0].innerHTML = options.health;
-
-    return createHero(options);
+    charNode.setAttribute('class', className + ' character');
+    posNode.appendChild(charNode);
   }
 
-  function initEnemy(options) {
-    var enemyPosNode = getPosNode(options.pos);
-    var enemyNode = document.createElement('div');
+  function renderHero(heroToRender) {
+    renderCharacter(heroToRender.getCoords(), 'hero');
+    document.getElementsByClassName('hero-info-health')[0].innerHTML = heroToRender.getHealth();
+  }
 
-    enemyNode.setAttribute('class', 'enemy character');
-    enemyPosNode.appendChild(enemyNode);
-
-    return createEnemy({ pos: options.pos, aggroRange: options.aggroRange });
+  function renderEnemy(enemyToRender) {
+    renderCharacter(enemyToRender.getCoords(), 'enemy');
   }
 
   function init() {
@@ -86,11 +82,13 @@ window.dungeon.map = (function (constants, pos, createHero, createEnemy) {
       pos: { col: 9, row: 4 },
       aggroRange: 2
     };
-    enemies.push(initEnemy(enemyOptions));
-    hero = initHero({
+    enemies.push(createEnemy(enemyOptions));
+    enemies.forEach(renderEnemy);
+    hero = createHero({
       pos: { row: 1, col: 1 },
       health: 10
     });
+    renderHero(hero);
   }
 
   return {
