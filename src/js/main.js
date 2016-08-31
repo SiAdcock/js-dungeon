@@ -1,4 +1,4 @@
-(function (constants, map, createHero, createEnemy) {
+(function (constants, map, createHero, createEnemy, inspect) {
   'use strict';
 
   var turns = 0;
@@ -7,6 +7,10 @@
 
   function incrementTurns() {
     turns += 1;
+  }
+
+  function inspectPos(position) {
+    enemies.forEach(inspect(position));
   }
 
   function bindEvents() {
@@ -23,14 +27,17 @@
     document.addEventListener('hero:endTurn', function () {
       map.moveEnemies(enemies, hero);
       incrementTurns();
+      inspectPos(hero.getCoords());
       document.getElementsByClassName('game-info-turn-count')[0].innerHTML = turns;
     });
   }
 
   function init() {
     var enemyOptions = {
+      name: 'Claud McDastardly',
       pos: { col: 9, row: 4 },
-      aggroRange: 2
+      aggroRange: 2,
+      attackStrength: 1
     };
     enemies.push(createEnemy(enemyOptions));
     hero = createHero({
@@ -42,4 +49,4 @@
   }
 
   init();
-}(window.dungeon.constants, window.dungeon.map, window.dungeon.createHero, window.dungeon.createEnemy));
+}(window.dungeon.constants, window.dungeon.map, window.dungeon.createHero, window.dungeon.createEnemy, window.dungeon.inspect));
