@@ -5,8 +5,14 @@ window.dungeon.inspect = function inspect(position) {
 
   return function (enemy) {
     if (enemy.getCoords().row === position.row && enemy.getCoords().col === position.col) {
-      document.getElementsByClassName('inspect-attack-strength')[0].innerHTML = enemy.getAttackStrength();
-      document.getElementsByClassName('inspect-name')[0].innerHTML = enemy.getName();
+      var name = enemy.getName();
+      var attackStrength = enemy.getAttackStrength();
+      document.getElementsByClassName('inspect-content')[0].innerHTML = '<h3 class="inspect-name">' +
+        name +
+        '</h3>' +
+        'Attack strength: <span class="inspect-attack-strength">' +
+        attackStrength +
+        '</span>';
     }
   };
 };
