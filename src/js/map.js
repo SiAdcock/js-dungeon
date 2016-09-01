@@ -67,7 +67,6 @@ window.dungeon.map = (function (constants) {
 
   function renderHero(heroToRender) {
     renderCharacter(heroToRender.getCoords(), 'hero');
-    document.getElementsByClassName('hero-info-health')[0].innerHTML = heroToRender.getHealth();
   }
 
   function renderEnemy(enemyToRender) {

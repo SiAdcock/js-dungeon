@@ -35,6 +35,10 @@ window.dungeon.createHero = (function (pos) {
       return health;
     }
 
+    function adjustHealthBy(amount) {
+      health += amount;
+    }
+
     function move(toCoords) {
       var heroVector = pos.getVector(getCoords(), toCoords);
       var nextPos = pos.getNextPos(getCoords(), heroVector);
@@ -49,6 +53,7 @@ window.dungeon.createHero = (function (pos) {
       setLastVector: setLastVector,
       getLastVector: getLastVector,
       getHealth: getHealth,
+      adjustHealthBy: adjustHealthBy,
       move: move
     };
   };

@@ -9,7 +9,27 @@
     turns += 1;
   }
 
+  function findEnemyAt(position) {
+    return enemies.reduce(function (prev, enemy) {
+      if (enemy.getCoords().col === position.col && enemy.getCoords().row === position.row) {
+        return enemy;
+      }
+    }, null);
+  }
+
+  function applyEffects(position) {
+    var enemyAtPosition = findEnemyAt(position);
+
+    if (enemyAtPosition) {
+      hero.adjustHealthBy(-enemyAtPosition.getAttackStrength());
+    }
+  }
+
   function inspectPos(position) {
+    /**
+     * TODO: it would make more sense if we found the enemy at the specified position first,
+     * then called the `inspect` function
+     */
     enemies.forEach(inspect(position));
   }
 
@@ -28,7 +48,9 @@
       map.moveEnemies(enemies, hero);
       incrementTurns();
       inspectPos(hero.getCoords());
+      applyEffects(hero.getCoords());
       document.getElementsByClassName('game-info-turn-count')[0].innerHTML = turns;
+      document.getElementsByClassName('hero-info-health')[0].innerHTML = hero.getHealth();
     });
   }
 
@@ -46,6 +68,7 @@
     });
     map.init(hero, enemies);
     bindEvents();
+    document.getElementsByClassName('hero-info-health')[0].innerHTML = hero.getHealth();
   }
 
   init();
