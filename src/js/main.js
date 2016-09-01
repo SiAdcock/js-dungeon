@@ -26,11 +26,16 @@
   }
 
   function inspectPos(position) {
-    /**
-     * TODO: it would make more sense if we found the enemy at the specified position first,
-     * then called the `inspect` function
-     */
-    enemies.forEach(inspect(position));
+    var enemyAtPosition = findEnemyAt(position);
+    var template;
+
+    if (enemyAtPosition) {
+      template = inspect(enemyAtPosition);
+    }
+    else {
+      template = '<h3 class="inspect-name">Nothing</h3>';
+    }
+    document.getElementsByClassName('inspect-content')[0].innerHTML = template;
   }
 
   function bindEvents() {
