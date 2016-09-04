@@ -1,6 +1,6 @@
 window.dungeon = window.dungeon || {};
 
-window.dungeon.map = (function (constants) {
+window.dungeon.map = (function (constants, q, pos) {
   'use strict';
 
   function matchCoordFor(colOrRow) {
@@ -32,7 +32,7 @@ window.dungeon.map = (function (constants) {
   }
 
   function getPosNode(position) {
-    return document.querySelectorAll('.map-row-' + position.row + ' .map-col-' + position.col)[0];
+    return q('.map-row-' + position.row + ' .map-col-' + position.col)[0];
   }
 
   function moveCharInDom(charNode, nextPos) {
@@ -73,9 +73,46 @@ window.dungeon.map = (function (constants) {
     renderCharacter(enemyToRender.getCoords(), 'enemy');
   }
 
+  function highlightMovePath(startPos, endPos) {
+    var vector = pos.getVector(startPos, endPos);
+    var nextPos = pos.getNextPos(startPos, vector);
+
+    getPosNode(nextPos).classList.add('terrain-move-path');
+  }
+
+  function clearMovePath() {
+    q('.terrain-move-path').forEach(function (pathNode) {
+      pathNode.classList.remove('terrain-move-path');
+    });
+  }
+
+  function bindEvents(hero) {
+    q('.terrain').forEach(function (el) {
+      el.addEventListener('mouseover', function () {
+        clearMovePath();
+        highlightMovePath(hero.getCoords(), getCoords(el));
+      });
+    });
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('map-col')) {
+        moveHeroTowards(hero, e.target);
+        clearMovePath();
+        highlightMovePath(hero.getCoords(), getCoords(e.target));
+        document.dispatchEvent(new CustomEvent('hero:endTurn'));
+      }
+      else if (e.target.classList.contains('character')) {
+        moveHeroTowards(hero, e.target.parentNode);
+        clearMovePath();
+        highlightMovePath(hero.getCoords(), getCoords(e.target.parentNode));
+        document.dispatchEvent(new CustomEvent('hero:endTurn'));
+      }
+    });
+  }
+
   function init(hero, enemies) {
     enemies.forEach(renderEnemy);
     renderHero(hero);
+    bindEvents(hero);
   }
 
   return {
@@ -83,4 +120,4 @@ window.dungeon.map = (function (constants) {
     moveEnemies: moveEnemies,
     init: init
   };
-}(window.dungeon.constants));
+}(window.dungeon.constants, window.dungeon.q, window.dungeon.pos));

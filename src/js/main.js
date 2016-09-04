@@ -39,16 +39,6 @@
   }
 
   function bindEvents() {
-    document.addEventListener('click', function (e) {
-      if (e.target.classList.contains('map-col')) {
-        map.moveHeroTowards(hero, e.target);
-        document.dispatchEvent(new CustomEvent('hero:endTurn'));
-      }
-      else if (e.target.classList.contains('character')) {
-        map.moveHeroTowards(hero, e.target.parentNode);
-        document.dispatchEvent(new CustomEvent('hero:endTurn'));
-      }
-    });
     document.addEventListener('hero:endTurn', function () {
       map.moveEnemies(enemies, hero);
       incrementTurns();

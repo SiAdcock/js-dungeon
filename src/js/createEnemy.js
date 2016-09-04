@@ -70,9 +70,9 @@ window.dungeon.createEnemy = (function (pos) {
     return {
       getCoords: getCoords,
       setCoords: setCoords,
+      getName: getName,
       getAggroRange: getAggroRange,
       getAttackStrength: getAttackStrength,
-      getName: getName,
       move: move
     };
   };

@@ -19,6 +19,11 @@ ul {
     width: 20px;
     height: 20px;
     border: 1px solid pink;
+    cursor: pointer;
+}
+
+.terrain:hover {
+    background-color: greenyellow;
 }
 
 .terrain:active {
@@ -27,6 +32,10 @@ ul {
 
 .terrain-grass {
     background-color: yellowgreen;
+}
+
+.terrain-move-path, .terrain-move-path:hover {
+    background-color: lightcoral;
 }
 
 .terrain-start {
