@@ -57,16 +57,18 @@ window.dungeon.map = (function (constants, q, pos) {
     });
   }
 
-  function renderMap() {
+  function renderMap(options) {
     var mapNode = q('.map')[0];
     var mapList = document.createElement('ul');
-    var mapWidth = 10;
-    var mapHeight = 5;
+    var mapWidth = options.width;
+    var mapHeight = options.height;
     var rowNum;
     var colNum;
     var row;
     var col;
     var rowList;
+    var startNode;
+    var endNode;
 
     for (rowNum = 1; rowNum <= mapHeight; rowNum += 1) {
       row = document.createElement('li');
@@ -80,6 +82,12 @@ window.dungeon.map = (function (constants, q, pos) {
       row.appendChild(rowList);
       mapList.appendChild(row);
     }
+    startNode = mapList.querySelectorAll('.map-row-' + options.startPos.row + ' .map-col-' + options.startPos.col)[0];
+    endNode = mapList.querySelectorAll('.map-row-' + options.endPos.row + ' .map-col-' + options.endPos.col)[0];
+    startNode.classList.add('terrain-start');
+    startNode.classList.remove('terrain-grass');
+    endNode.classList.add('terrain-end');
+    endNode.classList.remove('terrain-grass');
     mapNode.appendChild(mapList);
   }
 
@@ -136,7 +144,18 @@ window.dungeon.map = (function (constants, q, pos) {
   }
 
   function init(hero, enemies) {
-    renderMap();
+    renderMap({
+      width: 10,
+      height: 5,
+      startPos: {
+        row: 1,
+        col: 1
+      },
+      endPos: {
+        row: 5,
+        col: 10
+      }
+    });
     enemies.forEach(renderEnemy);
     renderHero(hero);
     bindEvents(hero);
