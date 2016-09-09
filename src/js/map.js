@@ -159,19 +159,9 @@ window.dungeon.map = (function (constants, q, pos) {
   function init(options) {
     hero = options.hero;
     enemies = options.enemies;
-    // TODO: move these options to main.js
-    mapSize = {
-      width: 10,
-      height: 5
-    };
-    startPos = {
-      row: 1,
-      col: 1
-    };
-    endPos = {
-      row: 5,
-      col: 10
-    };
+    mapSize = options.mapSize;
+    startPos = options.startPos;
+    endPos = options.endPos;
     renderMap(mapSize, startPos, endPos);
     enemies.forEach(renderEnemy);
     renderHero(hero);

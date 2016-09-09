@@ -39,6 +39,18 @@
   }
 
   function init() {
+    var mapSize = {
+      width: 10,
+      height: 5
+    };
+    var startPos = {
+      row: 1,
+      col: 1
+    };
+    var endPos = {
+      row: 5,
+      col: 10
+    };
     var enemyOptions = {
       name: 'Claud McDastardly',
       pos: { col: 9, row: 4 },
@@ -50,7 +62,13 @@
       pos: { row: 1, col: 1 },
       health: 10
     });
-    map.init({hero: hero, enemies: enemies});
+    map.init({
+      hero: hero,
+      enemies: enemies,
+      mapSize: mapSize,
+      startPos: startPos,
+      endPos: endPos
+    });
     turns = 0;
     q('.game-info-turn-count')[0].innerHTML = turns;
     q('.hero-info-health')[0].innerHTML = hero.getHealth();
