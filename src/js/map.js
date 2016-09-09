@@ -115,9 +115,19 @@ window.dungeon.map = (function (constants, q, pos) {
     bindEvents(hero);
   }
 
+  function gameOver() {
+    q('.map').forEach(function (mapNode) {
+      var gameOverNode = document.createElement('h2');
+
+      gameOverNode.innerHTML = 'Game over';
+      mapNode.parentNode.replaceChild(gameOverNode, mapNode);
+    });
+  }
+
   return {
     moveHeroTowards: moveHeroTowards,
     moveEnemies: moveEnemies,
-    init: init
+    init: init,
+    gameOver: gameOver
   };
 }(window.dungeon.constants, window.dungeon.q, window.dungeon.pos));

@@ -1,4 +1,4 @@
-(function (constants, map, createHero, createEnemy, inspect) {
+(function (constants, q, map, createHero, createEnemy, inspect) {
   'use strict';
 
   var turns = 0;
@@ -44,8 +44,11 @@
       incrementTurns();
       inspectPos(hero.getCoords());
       applyEffects(hero.getCoords());
-      document.getElementsByClassName('game-info-turn-count')[0].innerHTML = turns;
-      document.getElementsByClassName('hero-info-health')[0].innerHTML = hero.getHealth();
+      q('.game-info-turn-count')[0].innerHTML = turns;
+      q('.hero-info-health')[0].innerHTML = hero.getHealth();
+      if (hero.getHealth() <= 0) {
+        map.gameOver();
+      }
     });
   }
 
@@ -63,8 +66,8 @@
     });
     map.init(hero, enemies);
     bindEvents();
-    document.getElementsByClassName('hero-info-health')[0].innerHTML = hero.getHealth();
+    q('.hero-info-health')[0].innerHTML = hero.getHealth();
   }
 
   init();
-}(window.dungeon.constants, window.dungeon.map, window.dungeon.createHero, window.dungeon.createEnemy, window.dungeon.inspect));
+}(window.dungeon.constants, window.dungeon.q, window.dungeon.map, window.dungeon.createHero, window.dungeon.createEnemy, window.dungeon.inspect));
