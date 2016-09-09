@@ -57,6 +57,32 @@ window.dungeon.map = (function (constants, q, pos) {
     });
   }
 
+  function renderMap() {
+    var mapNode = q('.map')[0];
+    var mapList = document.createElement('ul');
+    var mapWidth = 10;
+    var mapHeight = 5;
+    var rowNum;
+    var colNum;
+    var row;
+    var col;
+    var rowList;
+
+    for (rowNum = 1; rowNum <= mapHeight; rowNum += 1) {
+      row = document.createElement('li');
+      row.classList.add('map-row-' + rowNum);
+      rowList = document.createElement('ul');
+      for (colNum = 1; colNum <= mapWidth; colNum += 1) {
+        col = document.createElement('li');
+        col.classList.add('terrain', 'terrain-grass', 'map-col', 'map-col-' + colNum);
+        rowList.appendChild(col);
+      }
+      row.appendChild(rowList);
+      mapList.appendChild(row);
+    }
+    mapNode.appendChild(mapList);
+  }
+
   function renderCharacter(position, className) {
     var posNode = getPosNode(position);
     var charNode = document.createElement('div');
@@ -110,6 +136,7 @@ window.dungeon.map = (function (constants, q, pos) {
   }
 
   function init(hero, enemies) {
+    renderMap();
     enemies.forEach(renderEnemy);
     renderHero(hero);
     bindEvents(hero);

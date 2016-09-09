@@ -4,6 +4,7 @@ h1 {
 
 ul {
     list-style: none;
+    padding: 0;
 }
 
 .map {
@@ -19,6 +20,7 @@ ul {
     width: 20px;
     height: 20px;
     border: 1px solid pink;
+    margin: 1px;
     cursor: pointer;
 }
 
