@@ -4,8 +4,6 @@ window.dungeon.map = (function (constants, q, pos, ev) {
   'use strict';
 
   var eventsBound = false;
-  var hero;
-  var enemies;
   var startPos;
   var endPos;
   var mapSize;
@@ -55,9 +53,9 @@ window.dungeon.map = (function (constants, q, pos, ev) {
   }
 
   function moveEnemy(oldPos, newPos) {
-      var enemyNode = getPosNode(oldPos).childNodes[0]; //TODO: can't always rely on this
+    var enemyNode = getPosNode(oldPos).childNodes[0]; //TODO: can't always rely on this
 
-      moveCharInDom(enemyNode, newPos);
+    moveCharInDom(enemyNode, newPos);
   }
 
   function renderMap() {
@@ -80,6 +78,8 @@ window.dungeon.map = (function (constants, q, pos, ev) {
       for (colNum = 1; colNum <= mapWidth; colNum += 1) {
         col = document.createElement('li');
         col.classList.add('terrain', 'terrain-grass', 'map-col', 'map-col-' + colNum);
+        col.setAttribute('data-col', colNum.toString());
+        col.setAttribute('data-row', rowNum.toString());
         rowList.appendChild(col);
       }
       row.appendChild(rowList);
@@ -102,15 +102,20 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     posNode.appendChild(charNode);
   }
 
-  function renderHero(heroToRender) {
-    renderCharacter(heroToRender.getCoords(), 'hero');
+  function renderHero(heroPos) {
+    renderCharacter(heroPos, 'hero');
   }
 
-  function renderEnemy(enemyToRender) {
-    renderCharacter(enemyToRender.getCoords(), 'enemy');
+  function renderEnemy(enemyPos) {
+    renderCharacter(enemyPos, 'enemy');
   }
 
-  function highlightMovePath(moveStartPos, moveEndPos) {
+  function highlightMovePath(moveEndPos) {
+    var heroNode = q('.hero')[0];
+    var moveStartPos = {
+      col: parseInt(heroNode.parentNode.getAttribute('data-col'), 10),
+      row: parseInt(heroNode.parentNode.getAttribute('data-row'), 10)
+    };
     var vector = pos.getVector(moveStartPos, moveEndPos);
     var nextPos = pos.getNextPos(moveStartPos, vector);
 
@@ -129,52 +134,54 @@ window.dungeon.map = (function (constants, q, pos, ev) {
   }
 
   function bindEvents() {
-    q('.terrain').forEach(function (el) {
-      el.addEventListener('mouseover', function () {
-        clearMovePath();
-        highlightMovePath(hero.getCoords(), getCoords(el));
-      });
-    });
     document.addEventListener('click', function (e) {
       var newPos;
 
       if (e.target.classList.contains('map-col')) {
         newPos = getCoords(e.target);
-        hero.move(newPos);
-        clearMovePath();
-        highlightMovePath(hero.getCoords(), newPos);
-        ev.publish('hero:endTurn');
       }
       else if (e.target.classList.contains('character')) {
         newPos = getCoords(e.target.parentNode);
-        hero.move(newPos);
-        clearMovePath();
-        highlightMovePath(hero.getCoords(), newPos);
-        ev.publish('hero:endTurn');
       }
+      else {
+        return false;
+      }
+      ev.publish('hero:move:start', {towardsPos: newPos});
+      clearMovePath();
+      highlightMovePath(newPos);
+      ev.publish('hero:endTurn');
     });
     q('.restart')[0].addEventListener('click', restart);
     ev.subscribe('enemy:move', function (event) {
       moveEnemy(event.detail.oldPos, event.detail.newPos);
     });
-    ev.subscribe('hero:move', function (event) {
+    ev.subscribe('hero:move:end', function (event) {
       moveHeroTowards(event.detail.newPos);
     });
   }
 
   function init(options) {
-    hero = options.hero;
-    enemies = options.enemies;
+    var hero = options.hero;
+    var enemies = options.enemies;
+
     mapSize = options.mapSize;
     startPos = options.startPos;
     endPos = options.endPos;
     renderMap(mapSize, startPos, endPos);
-    enemies.forEach(renderEnemy);
-    renderHero(hero);
+    enemies.forEach(function(enemy) {
+      renderEnemy(enemy.getCoords());
+    });
+    renderHero(hero.getCoords());
     if (!eventsBound) {
-      bindEvents();
+      bindEvents(hero);
       eventsBound = true;
     }
+    q('.terrain').forEach(function (el) {
+      el.addEventListener('mouseover', function () {
+        clearMovePath();
+        highlightMovePath(getCoords(el));
+      });
+    });
   }
 
   function gameOver() {

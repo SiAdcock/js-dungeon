@@ -45,8 +45,12 @@ window.dungeon.createHero = (function (pos, ev) {
 
       setCoords(newPos);
       setLastVector(heroVector);
-      ev.publish('hero:move', { newPos: newPos });
+      ev.publish('hero:move:end', { newPos: newPos });
     }
+
+    ev.subscribe('hero:move:start', function (e) {
+      move(e.detail.towardsPos);
+    });
 
     return {
       getCoords: getCoords,
