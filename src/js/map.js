@@ -71,6 +71,7 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     var startNode;
     var endNode;
 
+    mapNode.innerHTML = '';
     for (rowNum = 1; rowNum <= mapHeight; rowNum += 1) {
       row = document.createElement('li');
       row.classList.add('map-row-' + rowNum);
@@ -128,11 +129,6 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     });
   }
 
-  function restart() {
-    q('.map')[0].innerHTML = '';
-    ev.publish('main:restart');
-  }
-
   function bindEvents() {
     document.addEventListener('click', function (e) {
       var newPos;
@@ -151,7 +147,6 @@ window.dungeon.map = (function (constants, q, pos, ev) {
       highlightMovePath(newPos);
       ev.publish('hero:endTurn');
     });
-    q('.restart')[0].addEventListener('click', restart);
     ev.subscribe('enemy:move', function (event) {
       moveEnemy(event.detail.oldPos, event.detail.newPos);
     });

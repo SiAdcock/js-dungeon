@@ -80,7 +80,12 @@
     q('.hero-info-health')[0].innerHTML = hero.getHealth();
   }
 
+  function restart() {
+    init();
+  }
+
   function bindEvents() {
+    q('.restart')[0].addEventListener('click', restart);
     ev.subscribe('hero:endTurn', function () {
       moveEnemies();
       incrementTurns();
@@ -92,7 +97,6 @@
         map.gameOver();
       }
     });
-    ev.subscribe('main:restart', init);
   }
 
   init();
