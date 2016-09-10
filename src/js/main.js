@@ -1,4 +1,4 @@
-(function (constants, q, map, createHero, createEnemy, inspect) {
+(function (constants, q, map, createHero, createEnemy, inspect, ev) {
   'use strict';
 
   var turns;
@@ -86,9 +86,9 @@
         map.gameOver();
       }
     });
-    document.addEventListener('main:restart', init);
+    ev.subscribe('main:restart', init);
   }
 
   init();
   bindEvents();
-}(window.dungeon.constants, window.dungeon.q, window.dungeon.map, window.dungeon.createHero, window.dungeon.createEnemy, window.dungeon.inspect));
+}(window.dungeon.constants, window.dungeon.q, window.dungeon.map, window.dungeon.createHero, window.dungeon.createEnemy, window.dungeon.inspect, window.dungeon.ev));

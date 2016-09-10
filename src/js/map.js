@@ -1,6 +1,6 @@
 window.dungeon = window.dungeon || {};
 
-window.dungeon.map = (function (constants, q, pos) {
+window.dungeon.map = (function (constants, q, pos, ev) {
   'use strict';
 
   var eventsBound = false;
@@ -129,7 +129,7 @@ window.dungeon.map = (function (constants, q, pos) {
 
   function restart() {
     q('.map')[0].innerHTML = '';
-    document.dispatchEvent(new CustomEvent('main:restart'));
+    ev.publish('main:restart');
   }
 
   function bindEvents() {
@@ -144,13 +144,13 @@ window.dungeon.map = (function (constants, q, pos) {
         moveHeroTowards(e.target);
         clearMovePath();
         highlightMovePath(hero.getCoords(), getCoords(e.target));
-        document.dispatchEvent(new CustomEvent('hero:endTurn'));
+        ev.publish('hero:endTurn');
       }
       else if (e.target.classList.contains('character')) {
         moveHeroTowards(e.target.parentNode);
         clearMovePath();
         highlightMovePath(hero.getCoords(), getCoords(e.target.parentNode));
-        document.dispatchEvent(new CustomEvent('hero:endTurn'));
+        ev.publish('hero:endTurn');
       }
     });
     q('.restart')[0].addEventListener('click', restart);
@@ -187,4 +187,4 @@ window.dungeon.map = (function (constants, q, pos) {
     init: init,
     gameOver: gameOver
   };
-}(window.dungeon.constants, window.dungeon.q, window.dungeon.pos));
+}(window.dungeon.constants, window.dungeon.q, window.dungeon.pos, window.dungeon.ev));
