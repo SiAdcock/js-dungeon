@@ -71,7 +71,7 @@ window.dungeon.createEnemy = (function (pos, ev) {
         return;
       }
       setCoords(nextPos);
-      ev.publish('enemy:move', { oldPos: enemyCoords, newPos: nextPos });
+      ev.publish('enemy:move:end', { oldPos: enemyCoords, newPos: nextPos });
     }
 
     return {

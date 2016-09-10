@@ -86,7 +86,7 @@
 
   function bindEvents() {
     q('.restart')[0].addEventListener('click', restart);
-    ev.subscribe('hero:endTurn', function () {
+    ev.subscribe('main:turn:end', function () {
       moveEnemies();
       incrementTurns();
       inspectPos(hero.getCoords());
@@ -96,6 +96,9 @@
       if (hero.getHealth() <= 0) {
         map.gameOver();
       }
+    });
+    ev.subscribe('hero:move:start', function (e) {
+      hero.move(e.detail.towardsPos);
     });
   }
 

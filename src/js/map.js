@@ -58,6 +58,24 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     moveCharInDom(enemyNode, newPos);
   }
 
+  function highlightMovePath(moveEndPos) {
+    var heroNode = q('.hero')[0];
+    var moveStartPos = {
+      col: parseInt(heroNode.parentNode.getAttribute('data-col'), 10),
+      row: parseInt(heroNode.parentNode.getAttribute('data-row'), 10)
+    };
+    var vector = pos.getVector(moveStartPos, moveEndPos);
+    var nextPos = pos.getNextPos(moveStartPos, vector);
+
+    getPosNode(nextPos).classList.add('terrain-move-path');
+  }
+
+  function clearMovePath() {
+    q('.terrain-move-path').forEach(function (pathNode) {
+      pathNode.classList.remove('terrain-move-path');
+    });
+  }
+
   function renderMap() {
     var mapNode = q('.map')[0];
     var mapList = document.createElement('ul');
@@ -93,6 +111,12 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     endNode.classList.add('terrain-end');
     endNode.classList.remove('terrain-grass');
     mapNode.appendChild(mapList);
+    q('.terrain').forEach(function (el) {
+      el.addEventListener('mouseover', function () {
+        clearMovePath();
+        highlightMovePath(getCoords(el));
+      });
+    });
   }
 
   function renderCharacter(position, className) {
@@ -111,24 +135,6 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     renderCharacter(enemyPos, 'enemy');
   }
 
-  function highlightMovePath(moveEndPos) {
-    var heroNode = q('.hero')[0];
-    var moveStartPos = {
-      col: parseInt(heroNode.parentNode.getAttribute('data-col'), 10),
-      row: parseInt(heroNode.parentNode.getAttribute('data-row'), 10)
-    };
-    var vector = pos.getVector(moveStartPos, moveEndPos);
-    var nextPos = pos.getNextPos(moveStartPos, vector);
-
-    getPosNode(nextPos).classList.add('terrain-move-path');
-  }
-
-  function clearMovePath() {
-    q('.terrain-move-path').forEach(function (pathNode) {
-      pathNode.classList.remove('terrain-move-path');
-    });
-  }
-
   function bindEvents() {
     document.addEventListener('click', function (e) {
       var newPos;
@@ -145,9 +151,9 @@ window.dungeon.map = (function (constants, q, pos, ev) {
       ev.publish('hero:move:start', {towardsPos: newPos});
       clearMovePath();
       highlightMovePath(newPos);
-      ev.publish('hero:endTurn');
+      ev.publish('main:turn:end');
     });
-    ev.subscribe('enemy:move', function (event) {
+    ev.subscribe('enemy:move:end', function (event) {
       moveEnemy(event.detail.oldPos, event.detail.newPos);
     });
     ev.subscribe('hero:move:end', function (event) {
@@ -168,15 +174,9 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     });
     renderHero(hero.getCoords());
     if (!eventsBound) {
-      bindEvents(hero);
+      bindEvents();
       eventsBound = true;
     }
-    q('.terrain').forEach(function (el) {
-      el.addEventListener('mouseover', function () {
-        clearMovePath();
-        highlightMovePath(getCoords(el));
-      });
-    });
   }
 
   function gameOver() {
