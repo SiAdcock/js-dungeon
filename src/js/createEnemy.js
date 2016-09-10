@@ -1,6 +1,6 @@
 window.dungeon = window.dungeon || {};
 
-window.dungeon.createEnemy = (function (pos) {
+window.dungeon.createEnemy = (function (pos, ev) {
   'use strict';
 
   return function createEnemy(options) {
@@ -41,6 +41,7 @@ window.dungeon.createEnemy = (function (pos) {
       var heroCoords = hero.getCoords();
       var vector = pos.getVector(enemyCoords, heroCoords);
       var potentialNextPos = pos.getNextPos(enemyCoords, vector);
+      var nextPos;
 
       /**
        * TODO: this logic needs re-working. If hero moves toward enemy and lands
@@ -54,17 +55,23 @@ window.dungeon.createEnemy = (function (pos) {
       else if (Math.abs(vector.x) <= 1 && Math.abs(vector.y) <= 1) {
         // if enemy can attack hero
         if (potentialNextPos.row === heroCoords.row && potentialNextPos.col === heroCoords.col) {
-          setCoords(potentialNextPos);
+          nextPos = potentialNextPos;
         }
         // if enemy can't attack (i.e. can't move diagonally), mirror the hero's vector
         else {
-          setCoords(pos.getNextPos(getCoords(), hero.getLastVector()));
+          nextPos = pos.getNextPos(getCoords(), hero.getLastVector());
         }
       }
       // if hero is within aggro range, move towards hero
       else if (Math.abs(vector.x) <= getAggroRange() && Math.abs(vector.y) <= getAggroRange()) {
-        setCoords(potentialNextPos);
+        nextPos = potentialNextPos;
       }
+      // hero is outside aggro range
+      else {
+        return;
+      }
+      setCoords(nextPos);
+      ev.publish('enemy:move', { oldPos: enemyCoords, newPos: nextPos });
     }
 
     return {
@@ -76,4 +83,4 @@ window.dungeon.createEnemy = (function (pos) {
       move: move
     };
   };
-}(window.dungeon.pos));
+}(window.dungeon.pos, window.dungeon.ev));

@@ -1,6 +1,6 @@
 window.dungeon = window.dungeon || {};
 
-window.dungeon.createHero = (function (pos) {
+window.dungeon.createHero = (function (pos, ev) {
   'use strict';
 
   return function createHero(options) {
@@ -39,12 +39,13 @@ window.dungeon.createHero = (function (pos) {
       health += amount;
     }
 
-    function move(toCoords) {
-      var heroVector = pos.getVector(getCoords(), toCoords);
-      var nextPos = pos.getNextPos(getCoords(), heroVector);
+    function move(towardsPos) {
+      var heroVector = pos.getVector(getCoords(), towardsPos);
+      var newPos = pos.getNextPos(getCoords(), heroVector);
 
-      setCoords(nextPos);
+      setCoords(newPos);
       setLastVector(heroVector);
+      ev.publish('hero:move', { newPos: newPos });
     }
 
     return {
@@ -57,4 +58,4 @@ window.dungeon.createHero = (function (pos) {
       move: move
     };
   };
-}(window.dungeon.pos));
+}(window.dungeon.pos, window.dungeon.ev));

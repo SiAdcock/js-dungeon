@@ -9,6 +9,12 @@
     turns += 1;
   }
 
+  function moveEnemies() {
+    enemies.forEach(function (enemy) {
+      enemy.move(hero);
+    });
+  }
+
   function findEnemyAt(position) {
     return enemies.reduce(function (prev, enemy) {
       if (enemy.getCoords().col === position.col && enemy.getCoords().row === position.row) {
@@ -75,8 +81,8 @@
   }
 
   function bindEvents() {
-    document.addEventListener('hero:endTurn', function () {
-      map.moveEnemies();
+    ev.subscribe('hero:endTurn', function () {
+      moveEnemies();
       incrementTurns();
       inspectPos(hero.getCoords());
       applyEffects(hero.getCoords());

@@ -7,8 +7,8 @@ window.dungeon.ev = (function () {
     subscribe: function (name, handler) {
       document.addEventListener(name, handler);
     },
-    publish: function (name, message) {
-      document.dispatchEvent(new CustomEvent(name, message));
+    publish: function (name, detail) {
+      document.dispatchEvent(new CustomEvent(name, { detail: detail }));
     }
   };
 }());

@@ -48,20 +48,16 @@ window.dungeon.map = (function (constants, q, pos, ev) {
     getPosNode(nextPos).appendChild(charNode);
   }
 
-  function moveHeroTowards(toNode) {
+  function moveHeroTowards(newPos) {
     var heroNode = document.querySelectorAll('.hero')[0];
 
-    hero.move(getCoords(toNode));
-    moveCharInDom(heroNode, hero.getCoords());
+    moveCharInDom(heroNode, newPos);
   }
 
-  function moveEnemies() {
-    enemies.forEach(function (enemy) {
-      var enemyNode = getPosNode(enemy.getCoords()).childNodes[0]; //TODO: can't always rely on this
+  function moveEnemy(oldPos, newPos) {
+      var enemyNode = getPosNode(oldPos).childNodes[0]; //TODO: can't always rely on this
 
-      enemy.move(hero);
-      moveCharInDom(enemyNode, enemy.getCoords());
-    });
+      moveCharInDom(enemyNode, newPos);
   }
 
   function renderMap() {
@@ -140,20 +136,30 @@ window.dungeon.map = (function (constants, q, pos, ev) {
       });
     });
     document.addEventListener('click', function (e) {
+      var newPos;
+
       if (e.target.classList.contains('map-col')) {
-        moveHeroTowards(e.target);
+        newPos = getCoords(e.target);
+        hero.move(newPos);
         clearMovePath();
-        highlightMovePath(hero.getCoords(), getCoords(e.target));
+        highlightMovePath(hero.getCoords(), newPos);
         ev.publish('hero:endTurn');
       }
       else if (e.target.classList.contains('character')) {
-        moveHeroTowards(e.target.parentNode);
+        newPos = getCoords(e.target.parentNode);
+        hero.move(newPos);
         clearMovePath();
-        highlightMovePath(hero.getCoords(), getCoords(e.target.parentNode));
+        highlightMovePath(hero.getCoords(), newPos);
         ev.publish('hero:endTurn');
       }
     });
     q('.restart')[0].addEventListener('click', restart);
+    ev.subscribe('enemy:move', function (event) {
+      moveEnemy(event.detail.oldPos, event.detail.newPos);
+    });
+    ev.subscribe('hero:move', function (event) {
+      moveHeroTowards(event.detail.newPos);
+    });
   }
 
   function init(options) {
@@ -182,8 +188,6 @@ window.dungeon.map = (function (constants, q, pos, ev) {
   }
 
   return {
-    moveHeroTowards: moveHeroTowards,
-    moveEnemies: moveEnemies,
     init: init,
     gameOver: gameOver
   };
