@@ -55,6 +55,13 @@ window.dungeon.map = (function (constants, q, pos, ev, mapTemplate) {
     moveCharInDom(enemyNode, newPos);
   }
 
+  function killEnemy(enemyPos) {
+    var posNode = getPosNode(enemyPos);
+    var enemyNode = posNode.getElementsByClassName('enemy')[0];
+
+    posNode.removeChild(enemyNode);
+  }
+
   function highlightMovePath(moveEndPos) {
     var heroNode = q('.hero')[0];
     var moveStartPos = {
@@ -116,7 +123,7 @@ window.dungeon.map = (function (constants, q, pos, ev, mapTemplate) {
       else {
         return false;
       }
-      ev.publish('hero:move:start', {towardsPos: newPos});
+      ev.publish('hero:move:start', { towardsPos: newPos });
       clearMovePath();
       highlightMovePath(newPos);
       ev.publish('main:turn:end');
@@ -126,6 +133,9 @@ window.dungeon.map = (function (constants, q, pos, ev, mapTemplate) {
     });
     ev.subscribe('hero:move:end', function (event) {
       moveHeroTowards(event.detail.newPos);
+    });
+    ev.subscribe('enemy:kill', function (event) {
+      killEnemy(event.detail.pos);
     });
   }
 
@@ -137,7 +147,7 @@ window.dungeon.map = (function (constants, q, pos, ev, mapTemplate) {
     var endPos = options.endPos;
 
     renderMap(mapSize, startPos, endPos);
-    enemies.forEach(function(enemy) {
+    enemies.forEach(function (enemy) {
       renderEnemy(enemy.getCoords());
     });
     renderHero(hero.getCoords());

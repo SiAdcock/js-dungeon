@@ -9,6 +9,22 @@
     turns += 1;
   }
 
+  function killEnemy(enemy) {
+    var newEnemies = enemies.reduce(function (prev, curr) {
+      if (curr.getId() !== enemy.getId()) {
+        prev.push(curr);
+      }
+    }, []);
+
+    if (!newEnemies) {
+      enemies = [];
+    }
+    else {
+      enemies = newEnemies;
+    }
+    ev.publish('enemy:kill', { pos: enemy.getCoords() });
+  }
+
   function moveEnemies() {
     enemies.forEach(function (enemy) {
       enemy.move(hero);
@@ -45,7 +61,14 @@
       });
       inspectContentNode.addEventListener('click', function () {
         enemyAtPosition.adjustHealthBy(-hero.getAttackStrength());
-        inspectContentNode.getElementsByClassName('inspect-health')[0].innerHTML = enemyAtPosition.getHealth();
+        if (enemyAtPosition.getHealth() > 0) {
+          inspectContentNode.getElementsByClassName('inspect-health')[0].innerHTML = enemyAtPosition.getHealth();
+        }
+        else {
+          killEnemy(enemyAtPosition);
+          inspectPos(position);
+        }
+        ev.publish('main:turn:end');
       });
     }
     else {
@@ -70,6 +93,7 @@
       col: 10
     };
     var enemyOptions = {
+      id: 1,
       name: 'Claud McDastardly',
       pos: { col: 9, row: 4 },
       aggroRange: 2,
@@ -92,6 +116,7 @@
     turns = 0;
     q('.game-info-turn-count')[0].innerHTML = turns;
     q('.hero-info-health')[0].innerHTML = hero.getHealth();
+    q('.hero-info-attack-strength')[0].innerHTML = hero.getAttackStrength();
     inspectPos(startPos);
   }
 
