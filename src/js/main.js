@@ -59,17 +59,19 @@
         attackStrength: enemyAtPosition.getAttackStrength(),
         health: enemyAtPosition.getHealth()
       });
-      inspectContentNode.addEventListener('click', function () {
-        enemyAtPosition.adjustHealthBy(-hero.getAttackStrength());
-        if (enemyAtPosition.getHealth() > 0) {
-          inspectContentNode.getElementsByClassName('inspect-health')[0].innerHTML = enemyAtPosition.getHealth();
-        }
-        else {
-          killEnemy(enemyAtPosition);
-          inspectPos(position);
-        }
-        ev.publish('main:turn:end');
-      });
+      inspectContentNode
+        .getElementsByClassName('inspect-attack')[0]
+        .addEventListener('click', function () {
+          enemyAtPosition.adjustHealthBy(-hero.getAttackStrength());
+          if (enemyAtPosition.getHealth() > 0) {
+            inspectContentNode.getElementsByClassName('inspect-health')[0].innerHTML = enemyAtPosition.getHealth();
+          }
+          else {
+            killEnemy(enemyAtPosition);
+            inspectPos(position);
+          }
+          ev.publish('main:turn:end');
+        });
     }
     else {
       inspectContentNode = document.createElement('h3');
