@@ -1,4 +1,4 @@
-(function (constants, q, map, createHero, createEnemy, inspect, ev) {
+(function (constants, q, map, createHero, createEnemy, inspectEnemyTemplate, ev) {
   'use strict';
 
   var turns;
@@ -33,15 +33,18 @@
 
   function inspectPos(position) {
     var enemyAtPosition = findEnemyAt(position);
-    var template;
+    var inspectHtml;
 
     if (enemyAtPosition) {
-      template = inspect(enemyAtPosition);
+      inspectHtml = inspectEnemyTemplate({
+        name: enemyAtPosition.getName(),
+        attackStrength: enemyAtPosition.getAttackStrength()
+      });
     }
     else {
-      template = '<h3 class="inspect-name">Nothing</h3>';
+      inspectHtml = '<h3 class="inspect-name">Nothing</h3>';
     }
-    q('.inspect-content')[0].innerHTML = template;
+    q('.inspect-content')[0].innerHTML = inspectHtml;
   }
 
   function init() {
@@ -105,4 +108,11 @@
 
   init();
   bindEvents();
-}(window.dungeon.constants, window.dungeon.q, window.dungeon.map, window.dungeon.createHero, window.dungeon.createEnemy, window.dungeon.inspect, window.dungeon.ev));
+}(window.dungeon.constants,
+  window.dungeon.q,
+  window.dungeon.map,
+  window.dungeon.createHero,
+  window.dungeon.createEnemy,
+  window.dungeon.templates.inspectEnemy,
+  window.dungeon.ev
+));
