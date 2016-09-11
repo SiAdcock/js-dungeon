@@ -11,6 +11,7 @@ window.dungeon.createEnemy = (function (pos, ev) {
     var aggroRange = options.aggroRange;
     var attackStrength = options.attackStrength;
     var name = options.name;
+    var health = options.health;
 
     function getCoords() {
       return {
@@ -34,6 +35,14 @@ window.dungeon.createEnemy = (function (pos, ev) {
 
     function getName() {
       return name;
+    }
+
+    function getHealth() {
+      return health;
+    }
+
+    function adjustHealthBy(amount) {
+      health += amount;
     }
 
     function move(hero) {
@@ -80,6 +89,8 @@ window.dungeon.createEnemy = (function (pos, ev) {
       getName: getName,
       getAggroRange: getAggroRange,
       getAttackStrength: getAttackStrength,
+      getHealth: getHealth,
+      adjustHealthBy: adjustHealthBy,
       move: move
     };
   };

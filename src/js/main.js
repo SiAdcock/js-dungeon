@@ -33,18 +33,27 @@
 
   function inspectPos(position) {
     var enemyAtPosition = findEnemyAt(position);
-    var inspectHtml;
+    var inspectNode = q('.inspect')[0];
+    var inspectContentNode;
 
+    inspectNode.removeChild(inspectNode.lastChild);
     if (enemyAtPosition) {
-      inspectHtml = inspectEnemyTemplate({
+      inspectContentNode = inspectEnemyTemplate({
         name: enemyAtPosition.getName(),
-        attackStrength: enemyAtPosition.getAttackStrength()
+        attackStrength: enemyAtPosition.getAttackStrength(),
+        health: enemyAtPosition.getHealth()
+      });
+      inspectContentNode.addEventListener('click', function () {
+        enemyAtPosition.adjustHealthBy(-hero.getAttackStrength());
+        inspectContentNode.getElementsByClassName('inspect-health')[0].innerHTML = enemyAtPosition.getHealth();
       });
     }
     else {
-      inspectHtml = '<h3 class="inspect-name">Nothing</h3>';
+      inspectContentNode = document.createElement('h3');
+      inspectContentNode.innerHTML = 'Nothing';
+      inspectContentNode.classList.add('inspect-content');
     }
-    q('.inspect-content')[0].innerHTML = inspectHtml;
+    inspectNode.appendChild(inspectContentNode);
   }
 
   function init() {
@@ -64,12 +73,14 @@
       name: 'Claud McDastardly',
       pos: { col: 9, row: 4 },
       aggroRange: 2,
-      attackStrength: 1
+      attackStrength: 1,
+      health: 5
     };
     enemies = [createEnemy(enemyOptions)];
     hero = createHero({
       pos: { row: 1, col: 1 },
-      health: 10
+      health: 10,
+      attackStrength: 2
     });
     map.init({
       hero: hero,
