@@ -38,9 +38,10 @@ window.dungeon.map = (function (constants, q, pos, ev, mapTemplate) {
   }
 
   function moveCharInDom(charNode, nextPos) {
+    var nextPosNode = getPosNode(nextPos);
+
     charNode.parentNode.removeChild(charNode);
-    //TODO: ensure nextPos node exists
-    getPosNode(nextPos).appendChild(charNode);
+    nextPosNode.appendChild(charNode);
   }
 
   function moveHeroTowards(newPos) {
