@@ -50,7 +50,8 @@ window.dungeon.map = (function (constants, q, pos, ev, mapTemplate) {
   }
 
   function moveEnemy(oldPos, newPos) {
-    var enemyNode = getPosNode(oldPos).childNodes[0]; //TODO: can't always rely on this
+    var posNode = getPosNode(oldPos);
+    var enemyNode = posNode.getElementsByClassName('enemy')[0];
 
     moveCharInDom(enemyNode, newPos);
   }
