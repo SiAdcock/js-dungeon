@@ -41,7 +41,7 @@
     else {
       template = '<h3 class="inspect-name">Nothing</h3>';
     }
-    document.getElementsByClassName('inspect-content')[0].innerHTML = template;
+    q('.inspect-content')[0].innerHTML = template;
   }
 
   function init() {
@@ -78,6 +78,7 @@
     turns = 0;
     q('.game-info-turn-count')[0].innerHTML = turns;
     q('.hero-info-health')[0].innerHTML = hero.getHealth();
+    inspectPos(startPos);
   }
 
   function restart() {
